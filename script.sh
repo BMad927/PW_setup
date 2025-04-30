@@ -2,8 +2,7 @@
 
 echo "Installing dependencies..."
 
-# Check if iptables is installed
-# Note: Added openvswitch-switch-dpdk to fix the netplan apply warning
+# Uncomment to install required dependencies (if needed)
 # apt update && apt install -y iptables iptables-persistent openvswitch-switch-dpdk dnsmasq
 
 # Detect available network interfaces
@@ -28,21 +27,33 @@ is_valid_interface() {
     fi
 }
 
+# Prompt the user to select the WAN interface
+while true; do
+    read -p "Enter the number for the WAN (internet) interface: " wan_choice
+    wan_iface=$(echo "$interfaces" | sed -n "${wan_choice}p")
+
+    if is_valid_interface "$wan_iface"; then
+        echo "Selected WAN interface: $wan_iface"
+        break  # Break the loop when a valid WAN interface is selected
+    else
+        echo "Invalid choice. Please select a valid WAN interface."
+    fi
+done
+
 # Prompt the user to select the LAN interface
 while true; do
     read -p "Enter the number for the LAN (local network) interface: " lan_choice
     lan_iface=$(echo "$interfaces" | sed -n "${lan_choice}p")
 
-    # Check if LAN and WAN interfaces are the same
+    # Validate if LAN interface exists and is not the same as WAN
     if [[ "$lan_iface" == "$wan_iface" ]]; then
         echo "LAN and WAN interfaces cannot be the same. Please select a different LAN interface."
         continue  # Continue the loop to ask for another selection
     fi
 
-    # Validate if the selected LAN interface exists in the list of available interfaces
     if is_valid_interface "$lan_iface"; then
         echo "Selected LAN interface: $lan_iface"
-        break  # Break the loop when a valid, different LAN interface is selected
+        break  # Break the loop when a valid LAN interface is selected
     else
         echo "Invalid choice. Please select a valid LAN interface."
     fi
@@ -67,6 +78,7 @@ fi
 sysctl -w net.ipv4.ip_forward=1
 sysctl -p
 
+# Set up NAT (MASQUERADE)
 iptables -t nat -A POSTROUTING -o $wan_iface -j MASQUERADE
 iptables -A FORWARD -i $wan_iface -o $lan_iface -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i $lan_iface -o $wan_iface -j ACCEPT
@@ -136,7 +148,8 @@ EOF
 # According to the Netplan docs, the permissions must be restricted to the root user.
 sudo chmod 600 /etc/netplan/*.yaml
 
-# Apply netplan configuration
+# Generate and apply netplan configuration
+netplan generate
 netplan apply
 
 # Restart networking service to apply changes
