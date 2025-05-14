@@ -55,6 +55,12 @@ if ! wget "https://codeload.github.com/opennds/opennds/tar.gz/v${OPENNDS_VERSION
     exit 1
 fi
 tar -xf "v${OPENNDS_VERSION}"
+
+# List contents of the extracted directory
+echo "Listing extracted files:"
+ls
+
+# Try to cd into the correct extracted directory
 cd "opennds-${OPENNDS_VERSION}"
 
 echo ""
