@@ -9,7 +9,7 @@ cleanup() {
     echo "Cleaning up..."
     # Remove downloaded tarballs and extracted directories
     rm -rf "libmicrohttpd-${LIBMICROHTTPD_VERSION}" "libmicrohttpd-${LIBMICROHTTPD_VERSION}.tar.gz"
-    rm -rf "opennds-${OPENNDS_VERSION}" "v${OPENNDS_VERSION}"
+    rm -rf "openNDS-${OPENNDS_VERSION}" "v${OPENNDS_VERSION}"
     echo "Cleanup complete."
 }
 
@@ -60,8 +60,8 @@ tar -xf "v${OPENNDS_VERSION}"
 echo "Listing extracted files:"
 ls
 
-# Try to cd into the correct extracted directory
-cd "opennds-${OPENNDS_VERSION}"
+# Use the correct directory name
+cd "openNDS-${OPENNDS_VERSION}"
 
 echo ""
 echo "Building OpenNDS"
