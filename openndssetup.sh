@@ -2,7 +2,7 @@
 
 # Define versions
 LIBMICROHTTPD_VERSION="0.9.71"
-OPENNDS_VERSION="9.9.1"  # Updated version
+OPENNDS_VERSION="10.3.1"  # Updated version to 10.3.1
 
 # Function to handle cleanup
 cleanup() {
@@ -50,7 +50,7 @@ cd ..
 
 echo ""
 echo "Downloading OpenNDS"
-if ! wget "https://codeload.github.com/opennds/opennds/tar.gz/v9.9.1"; then
+if ! wget "https://codeload.github.com/opennds/opennds/tar.gz/v${OPENNDS_VERSION}"; then
     echo "Error downloading OpenNDS. Exiting."
     exit 1
 fi
