@@ -3,7 +3,7 @@
 echo "Installing dependencies..."
 
 # Uncomment to install required dependencies (if needed)
-# apt update && apt install -y iptables iptables-persistent openvswitch-switch-dpdk dnsmasq
+apt update && apt install -y iptables iptables-persistent openvswitch-switch-dpdk dnsmasq
 
 # Detect available network interfaces
 echo "Detecting available network interfaces..."
@@ -77,17 +77,6 @@ fi
 # Apply forwarding immediately
 sysctl -w net.ipv4.ip_forward=1
 sysctl -p
-
-# Set up NAT (MASQUERADE)
-iptables -t nat -A POSTROUTING -o $wan_iface -j MASQUERADE
-iptables -A FORWARD -i $wan_iface -o $lan_iface -m state --state RELATED,ESTABLISHED -j ACCEPT
-iptables -A FORWARD -i $lan_iface -o $wan_iface -j ACCEPT
-
-# Ensure the directory exists before saving rules
-mkdir -p /etc/iptables
-
-# Save iptables rules
-iptables-save > /etc/iptables/rules.v4
 
 # Configure /etc/default/dnsmasq to ignore resolvconf and exclude loopback
 echo "Configuring /etc/default/dnsmasq..."
